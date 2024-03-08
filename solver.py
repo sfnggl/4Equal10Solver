@@ -27,7 +27,10 @@ def eval_(node : ast.expr):
         case ast.Constant(value) if isinstance(value, int):
             return value
         case ast.BinOp(left, op, right):
-            return operators[type(op)](eval_(left), eval_(right))
+            try:
+                return operators[type(op)](eval_(left), eval_(right))
+            except ZeroDivisionError as _:
+                return -np.inf
         case ast.UnaryOp(op, operand):
             return operators[type(op)](eval_(operand))
         case _:
@@ -83,7 +86,7 @@ def main():
             print(colored("\nFound \t{}\n".format(solution), 'green'))
             sys.exit(1)
 
-    print(colored("\nFound no solution!\n"), 'red')
+    print(colored("\nFound no solution!\n", 'red'))
 
 if __name__ == "__main__":
     main()
