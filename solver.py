@@ -78,7 +78,7 @@ def main():
         print(f"\n{e}\n")
         sys.exit(0)
 
-    for solution in solution_space("1234"):
+    for solution in solution_space(input_str):
         if eval_expr(solution) == 10:
             print(colored("\nFound \t{}\n".format(solution), 'green'))
             sys.exit(1)
