@@ -2,6 +2,7 @@
 
 static int cursor = 0;
 static int length = 0;
+static char in_str[STR_TO_IN_LEN] = {'\0'};
 
 int unckd_add(int a, int b){ return a+b; }
 int unckd_sub(int a, int b){ return a-b; }
@@ -21,7 +22,7 @@ evalStr(const char *str)
 	while(i < strlen(str))
 	{
 		int	char_base10 = (int)strtol(strncpy(num, str+i, 1), NULL, 10);
-		buffer[i].value =  char_base10 || ((int)str[i] == 48) ? char_base10 : -1;
+		buffer[i].value =  char_base10 || ((int)str[i] == 48) ? char_base10 : -1 * (int)str[i];
 		switch((int)str[i])
 		{
 			case 42:
@@ -45,6 +46,7 @@ evalStr(const char *str)
 	// 		42, &unckd_mult, 43, &unckd_add, 45, &unckd_sub, 47, &unckd_safediv);
 
 	pnNode* tree = buildPNTree(buffer);
+	printINFromPN(tree, in_str);
 
 	// char prefix[256] = {"\0"};
 	// printPNTree(tree, prefix);
@@ -82,7 +84,7 @@ buildPNTree(pnToken *buffer)
 int 
 evalPNTree(pnNode *tree)
 {
-	if(tree->node.value != -1) {return tree->node.value;}
+	if(tree->node.value >= 0) {return tree->node.value;}
 	else return tree->node.operator(evalPNTree(tree->left), evalPNTree(tree->right));
 }
 
@@ -101,4 +103,58 @@ printPNTree(pnNode *tree, char prefix[])
 	printPNTree(tree->left, strcat(prefix, "\t"));
 	printPNTree(tree->right, prefix);
 
+}
+
+void
+printINFromPN(pnNode *tree, char buffer[STR_TO_IN_LEN])
+{
+	if(tree == NULL){return;}
+
+	char buffed_char = (char) (tree->node.value + 48);
+
+	if(tree->node.value >= 0) { strcat(buffer, &buffed_char); return; }
+
+	_Bool bracket = spawnBracket(tree, tree->left);
+
+	if(bracket) { buffed_char = (char)40; strcat(buffer, &buffed_char); }
+
+	printINFromPN(tree->left, buffer);
+
+	buffed_char = (char) (tree->node.value * -1);
+	strcat(buffer, &buffed_char);
+
+	bracket = spawnBracket(tree, tree->right);
+	if(bracket) { buffed_char = (char)40; strcat(buffer, &buffed_char); }
+
+	printINFromPN(tree->right, buffer);
+
+	if(bracket) { buffed_char = (char)41; strcat(buffer, &buffed_char); }
+
+}
+
+_Bool
+spawnBracket(pnNode *node1, pnNode *node2)
+{
+	if(node1 == NULL){exit(1);}
+	if(node2 == NULL){return false;}
+
+	if(node1->node.value < 0 && node2->node.value < 0)
+	{
+		int order = node1->node.value - node2->node.value;
+		// fprintf(stdout, " %d ", order);
+		if(node1->node.value == -42 && (order == 1 || order == 3)) { return true; }
+		if(node1->node.value == -47 && (order == -4 || order == -2)) { return true; }
+	}
+
+	return false;
+}
+
+void
+printResult(int result)
+{
+	if(result == 10){
+		fprintf(stdout, GREEN"\nFound the solution:\n\n\t%s = %d\n\n"RESET, in_str, result);
+	} else {
+		fprintf(stdout, RED"\n%s = %d\n\nis not a solution\n\n"RESET, in_str, result);
+	}
 }
