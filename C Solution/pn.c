@@ -2,7 +2,7 @@
 
 static int cursor = 0;
 static int length = 0;
-static char in_str[STR_TO_IN_LEN] = {'\0'};
+char in_str[STR_TO_IN_LEN] = {'\0'};
 
 int unckd_add(int a, int b){ return a+b; }
 int unckd_sub(int a, int b){ return a-b; }
@@ -13,7 +13,7 @@ int unckd_safediv(int a, int b){
 }
 
 int
-evalStr(const char *str)
+evalStr(char *str)
 {
 	length = strlen(str);
 	pnToken *buffer = calloc(length, sizeof(pnToken));
@@ -86,23 +86,6 @@ evalPNTree(pnNode *tree)
 {
 	if(tree->node.value >= 0) {return tree->node.value;}
 	else return tree->node.operator(evalPNTree(tree->left), evalPNTree(tree->right));
-}
-
-void
-printPNTree(pnNode *tree, char prefix[])
-{
-	if(tree == NULL){return;}
-
-	printf(prefix);
-	printf("%p|%d|%p\n", &tree->node, tree->node.value, tree->node.operator);
-	printf(prefix);
-	printf("Left : %p\n", tree->left);
-	printf(prefix);
-	printf("Right : %p\n", tree->right);
-
-	printPNTree(tree->left, strcat(prefix, "\t"));
-	printPNTree(tree->right, prefix);
-
 }
 
 void

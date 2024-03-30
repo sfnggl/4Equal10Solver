@@ -1,9 +1,14 @@
+#include "bit_manip_bytes_to_str.h"
+#include "polish_n.h"
 #include <stdio.h>
-#include <stdlib.h>
 
-static char charvalues[16] = {
-  48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 43, 45, 42, 47, 63, 33
-};
+unsigned int
+fourrandop()
+{
+  time_t t;
+  srand((unsigned) time(&t));
+  return ((unsigned int)rand() & 0xf0f0f00) | 0x8080800;
+}
 
 void
 bin (unsigned n)
@@ -44,19 +49,15 @@ read_bytes_to_char(unsigned int* buf, char* off_buf, int offset_flag)
   }
 }
 
-int
-main ()
+char*
+bytes_to_str(unsigned int bytes)
 {
-  // unsigned int string = 0x01234567;
-  unsigned int string = 0xa9b5c12;
-  unsigned int odd_chars = cons_bytes_mod_16 (string, 0);
-  unsigned int even_chars = cons_bytes_mod_16 (string, 1);
   char* res = calloc(1, sizeof(char)*8);
+  // res[0] = (char)36;
+  unsigned int odd_chars = cons_bytes_mod_16(bytes, 0);
+  unsigned int even_chars = cons_bytes_mod_16(bytes, 1);
   read_bytes_to_char (&odd_chars, res, 0);
   read_bytes_to_char (&even_chars, res, 1);
-  fprintf(stdout, "%s\n", res);
-  // printf ("0x%x = %s\n", string, (unsigned char *) &string);
-  // printf ("0x%x = %s\n", odd_chars, (unsigned char *) &odd_chars);
-  // printf ("0x%x = %s\n", even_chars, (unsigned char *) &even_chars);
-  return 0;
+  return res;
 }
+

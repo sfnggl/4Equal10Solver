@@ -11,6 +11,7 @@
 
 #define STACK_SIZE 4
 #define STACK_MEMSET 0
+#define STR_TO_IN_LEN 10
 #define RED "\033[0;31m"
 #define GREEN "\033[0;32m"
 #define RESET "\033[0m"
@@ -29,7 +30,10 @@ typedef struct pnNode {
 	struct pnNode *right;
 } pnNode;
 
-extern int evalStr(const char *str);
+extern int evalStr(char *str);
 extern pnNode* buildPNTree(pnToken *buffer);
 extern int evalPNTree(pnNode *tree);
 extern void printPNTree(pnNode *tree, char *prefix);
+extern _Bool spawnBracket(pnNode *node1, pnNode *node2);
+void printINFromPN(pnNode *tree, char buffer[STR_TO_IN_LEN]);
+extern void printResult(int result);
