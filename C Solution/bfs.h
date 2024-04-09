@@ -10,7 +10,8 @@
 
 typedef struct State
 {
-  unsigned int string;
+  unsigned int bytes;
+  char string[8];
   int value;
 } State;
 
@@ -23,7 +24,7 @@ typedef struct Queue
 
 void fisher_yates(int* arr, int len);
 State rand_start(int* args);
-void neighbors(State current_state);
+void neighbors(State* current_state);
 void enqueue(const void* seed, State* state);
 State* dequeue();
 _Bool isEmpty();

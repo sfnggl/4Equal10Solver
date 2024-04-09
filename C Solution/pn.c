@@ -1,7 +1,8 @@
 #include "polish_n.h"
 
-static int cursor = 0;
-static int length = 0;
+static int cursor;
+static int length;
+static char buffed_char;
 char in_str[STR_TO_IN_LEN] = {'\0'};
 
 int unckd_add(int a, int b){ return a+b; }
@@ -45,16 +46,16 @@ evalStr(char *str)
 	// fprintf(stdout, "Legend:\n%c\t%p\n%c\t%p\n%c\t%p\n%c\t%p\n\n\n",
 	// 		42, &unckd_mult, 43, &unckd_add, 45, &unckd_sub, 47, &unckd_safediv);
 
+  memset(in_str, '\0', STR_TO_IN_LEN);
 	pnNode* tree = buildPNTree(buffer);
 	printINFromPN(tree, in_str);
-
-	// char prefix[256] = {"\0"};
-	// printPNTree(tree, prefix);
 
 	int result = evalPNTree(tree);
 
 	free(buffer);
 	free(tree);
+
+  cursor = 0;
 
 	return result;
 
@@ -93,7 +94,7 @@ printINFromPN(pnNode *tree, char buffer[STR_TO_IN_LEN])
 {
 	if(tree == NULL){return;}
 
-	char buffed_char = (char) (tree->node.value + 48);
+	buffed_char = (char) (tree->node.value + 48);
 
 	if(tree->node.value >= 0) { strcat(buffer, &buffed_char); return; }
 
@@ -140,4 +141,5 @@ printResult(int result)
 	} else {
 		fprintf(stdout, RED"\n%s = %d\n\nis not a solution\n\n"RESET, in_str, result);
 	}
+  memset(in_str, '\0', STR_TO_IN_LEN);
 }

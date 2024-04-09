@@ -48,7 +48,7 @@ rand_start(int* args)
   str += args[2] << 12;
   str += args[3] << 20;
 
-  s_0.string = str;
+  s_0.bytes = str;
   s_0.value = evalStr(bytes_to_str(str));
 
   return s_0;
@@ -65,9 +65,11 @@ enqueue(const void* seed, State* state)
     exit(-1);
   }
   // hash to check if collision, should skip on true
-  uint64_t hash_state = clhash(seed, bytes_to_str(state->string)+1, 7) % SET_SIZE;
+  uint64_t hash_state = clhash(seed, bytes_to_str(state->bytes)+1, 7) % SET_SIZE;
   if (hashtable[hash_state] == 0) {
     hashtable[hash_state] = 1;
+  } else {
+    return;
   } 
   queue.buffer[queue.Rear++] = state;
 }
@@ -83,13 +85,13 @@ dequeue()
 }
 
 void
-neighbors(State current_state)
+neighbors(State* current_state)
 {
-  char* strToEval;
-  State near_state = current_state;
+  // char* strToEval;
+  State* near_state = current_state;
   unsigned int exprconsts = (
-    (cons_bytes_mod_16(near_state.string, 0) & 0xf) + 
-    (cons_bytes_mod_16(near_state.string, 1) << 4)
+    (cons_bytes_mod_16(near_state->bytes, 0) & 0xf) + 
+    (cons_bytes_mod_16(near_state->bytes, 1) << 4)
   );
   unsigned int exprconstsarr[4] = {
     (exprconsts & 0xf00000) >> 20,
@@ -103,32 +105,34 @@ neighbors(State current_state)
       (exprconstsarr[(swap[i] & 0xf00) >> 8] << 12) +
       (exprconstsarr[(swap[i] & 0xf0) >> 4] << 4) +
       (exprconstsarr[(swap[i] & 0xf)]);
-    for (int j = 0; i < 64; j++) {
+    for (int j = 0; j < 64; j++) {
       new_string += opcombs[j];
 
-      near_state.string = new_string;
+      near_state->bytes = new_string;
+      strcpy(near_state->string, bytes_to_str(near_state->bytes));
 
-      fprintf(stdout, "%x", near_state.string);
-      strToEval = bytes_to_str(near_state.string);
-      fprintf(stdout, "\nLength = %ld\n", strlen(strToEval));
-      printResult(evalStr(strToEval));
-      exit(-1);
+      fprintf(stdout, "%x -> %s\n", near_state->bytes, near_state->string);
 
-      near_state.value = evalStr(bytes_to_str(near_state.string));
-      enqueue(seed, &near_state);
+      printResult(evalStr(near_state->string));
+
+      near_state->value = evalStr(near_state->string);
+      enqueue(seed, near_state);
 
       // Swap byte 2 and 3
-      near_state.string = 
+      near_state->bytes = 
         (new_string & 0xf00ffff) + 
         ((new_string & 0xf00000) >> 4) + 
         ((new_string & 0xf0000) << 4);
 
-      strToEval = bytes_to_str(near_state.string);
-      printResult(evalStr(strToEval));
+      strcpy(near_state->string, bytes_to_str(near_state->bytes));
+
+      fprintf(stdout, "%x -> %s\n", near_state->bytes, near_state->string);
+
+      printResult(evalStr(near_state->string));
       exit(-1);
 
-      near_state.value = evalStr(bytes_to_str(near_state.string));
-      enqueue(seed, &near_state);
+      near_state->value = evalStr(bytes_to_str(near_state->bytes));
+      enqueue(seed, near_state);
     }
   }
 }
@@ -161,19 +165,26 @@ bfs_loop(unsigned int* args)
 
   init_seed();
 
-  s_0.string = str;
-  // fprintf(stdout, "%s\n", bytes_to_str(s_0.string)+1); exit(-1);
-  s_0.value = evalStr(bytes_to_str(s_0.string)+1);
+  s_0.bytes = str;
+  // s_0.string = bytes_to_str(s_0.bytes);
+  strcpy(s_0.string, bytes_to_str(s_0.bytes));
+  s_0.value = evalStr(s_0.string);
+
   enqueue(seed, &s_0);
 
   while (!isFull()) {
     current_state = dequeue();
+    /* fprintf(stdout, "%x -> %s = %d\n", 
+      current_state->bytes, 
+      bytes_to_str(current_state->bytes), 
+      current_state->value
+    ); */
+    // exit(-1);
     if (current_state->value == 10) {
-      printResult(current_state->value);
-      // printf("Found the solution: %s\n", bytes_to_str(current_state->string));
+      printResult(evalStr(current_state->string));
       return 0;
     }
-    neighbors(*current_state);
+    neighbors(current_state);
   }
   free(seed);
   return 1;

@@ -11,7 +11,7 @@
 
 #define STACK_SIZE 4
 #define STACK_MEMSET 0
-#define STR_TO_IN_LEN 10
+#define STR_TO_IN_LEN 12
 #define RED "\033[0;31m"
 #define GREEN "\033[0;32m"
 #define RESET "\033[0m"
