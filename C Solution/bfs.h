@@ -17,7 +17,7 @@ typedef struct State
 
 typedef struct Queue
 {
-  State* buffer[SET_SIZE];
+  State buffer[SET_SIZE];
   int Rear;
   int Front;
 } Queue;
@@ -26,7 +26,7 @@ void fisher_yates(int* arr, int len);
 State rand_start(int* args);
 void neighbors(State* current_state);
 void enqueue(const void* seed, State* state);
-State* dequeue();
+State dequeue();
 _Bool isEmpty();
 _Bool isFull();
 int bfs_loop(unsigned int* args);

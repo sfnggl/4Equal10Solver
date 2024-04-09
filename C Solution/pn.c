@@ -9,8 +9,8 @@ int unckd_add(int a, int b){ return a+b; }
 int unckd_sub(int a, int b){ return a-b; }
 int unckd_mult(int a, int b){ return a*b; }
 int unckd_safediv(int a, int b){
-	if(b == 0){ return INT_MIN; }
-	else{ return round(a / b); }
+	if(b == 0.0){ return INT_MIN; }
+	else{ return (int)round(a / b); }
 }
 
 int
@@ -104,6 +104,8 @@ printINFromPN(pnNode *tree, char buffer[STR_TO_IN_LEN])
 
 	printINFromPN(tree->left, buffer);
 
+	if(bracket) { buffed_char = (char)41; strcat(buffer, &buffed_char); }
+
 	buffed_char = (char) (tree->node.value * -1);
 	strcat(buffer, &buffed_char);
 
@@ -125,9 +127,8 @@ spawnBracket(pnNode *node1, pnNode *node2)
 	if(node1->node.value < 0 && node2->node.value < 0)
 	{
 		int order = node1->node.value - node2->node.value;
-		// fprintf(stdout, " %d ", order);
-		if(node1->node.value == -42 && (order == 1 || order == 3)) { return true; }
-		if(node1->node.value == -47 && (order == -4 || order == -2)) { return true; }
+		if(node1->node.value == -42 || (order > 0)) { return true; }
+		if(node1->node.value == -47 || (order <= 0)) { return true; }
 	}
 
 	return false;
