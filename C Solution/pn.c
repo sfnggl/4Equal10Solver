@@ -1,19 +1,28 @@
 #include "polish_n.h"
+#include <float.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 static int cursor;
 static int length;
 static char buffed_char;
 char in_str[STR_TO_IN_LEN] = {'\0'};
 
-int unckd_add(int a, int b){ return a+b; }
-int unckd_sub(int a, int b){ return a-b; }
-int unckd_mult(int a, int b){ return a*b; }
-int unckd_safediv(int a, int b){
-	if(b == 0.0){ return INT_MIN; }
-	else{ return (int)round(a / b); }
+float unckd_add(float a, float b){ return a+b; }
+float unckd_sub(float a, float b){ return a-b; }
+float unckd_mult(float a, float b){ return a*b; }
+float div_wrapper(float a, float b)
+{
+  if (b != 0) {
+    return ( float ) a / ( float ) b ;
+  } else {
+    return FLT_MIN;
+  }
 }
 
-int
+long
 evalStr(char *str)
 {
 	length = strlen(str);
@@ -22,7 +31,7 @@ evalStr(char *str)
 	char num[1];
 	while(i < strlen(str))
 	{
-		int	char_base10 = (int)strtol(strncpy(num, str+i, 1), NULL, 10);
+		long char_base10 = strtol(strncpy(num, str+i, 1), NULL, 10);
 		buffer[i].value =  char_base10 || ((int)str[i] == 48) ? char_base10 : -1 * (int)str[i];
 		switch((int)str[i])
 		{
@@ -36,21 +45,18 @@ evalStr(char *str)
 				buffer[i].operator = &unckd_sub;
 				break;
 			case 47:
-				buffer[i].operator = &unckd_safediv;
+				buffer[i].operator = &div_wrapper;
 				break;
 			default: buffer[i].operator = NULL;
 		}
 		i++;
 	}
 
-	// fprintf(stdout, "Legend:\n%c\t%p\n%c\t%p\n%c\t%p\n%c\t%p\n\n\n",
-	// 		42, &unckd_mult, 43, &unckd_add, 45, &unckd_sub, 47, &unckd_safediv);
-
   memset(in_str, '\0', STR_TO_IN_LEN);
 	pnNode* tree = buildPNTree(buffer);
 	printINFromPN(tree, in_str);
 
-	int result = evalPNTree(tree);
+	float result = evalPNTree(tree);
 
 	free(buffer);
 	free(tree);
@@ -82,7 +88,7 @@ buildPNTree(pnToken *buffer)
 	return node;
 }
 
-int 
+long
 evalPNTree(pnNode *tree)
 {
 	if(tree->node.value >= 0) {return tree->node.value;}
@@ -127,7 +133,7 @@ spawnBracket(pnNode *node1, pnNode *node2)
 	if(node1->node.value < 0 && node2->node.value < 0)
 	{
 		int order = node1->node.value - node2->node.value;
-		if(node1->node.value == -42 || (order > 0)) { return true; }
+		if(node1->node.value == -42 && (order <= 0)) { return true; }
 		if(node1->node.value == -47 || (order <= 0)) { return true; }
 	}
 
@@ -135,12 +141,14 @@ spawnBracket(pnNode *node1, pnNode *node2)
 }
 
 void
-printResult(int result)
+printResult(long result)
 {
+  int integer_result = (int)roundl(result);
 	if(result == 10){
-		fprintf(stdout, GREEN"\nFound the solution:\n\n\t%s = %d\n\n"RESET, in_str, result);
+		fprintf(stdout, GREEN"\nFound the solution:\n\n\t%s = %d\n\n"RESET, in_str, integer_result);
+    exit(0);
 	} else {
-		fprintf(stdout, RED"\n%s = %d\n\nis not a solution\n\n"RESET, in_str, result);
+		fprintf(stdout, RED"\n%s = %d\n\nis not a solution\n\n"RESET, in_str, integer_result);
 	}
   memset(in_str, '\0', STR_TO_IN_LEN);
 }

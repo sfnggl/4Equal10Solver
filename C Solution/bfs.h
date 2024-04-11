@@ -1,11 +1,3 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
-#include "time.h"
-#include "stdbool.h"
-#include "inttypes.h"
-#include "clhash.h"
-
 #define SET_SIZE 20000 // > 4! * 764
 
 typedef struct State

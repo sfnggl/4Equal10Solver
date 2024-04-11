@@ -1,13 +1,5 @@
-#include <math.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
 #include <sys/types.h>
 #include <stdbool.h>
-#include <errno.h>
-#include <inttypes.h>
 
 #define STACK_SIZE 4
 #define STACK_MEMSET 0
@@ -20,8 +12,8 @@
 // output : its evaluation
 
 typedef struct pnToken {
-	int value;
-	int (*operator)(int a, int b);
+	long value;
+	float (*operator)(float a, float b);
 } pnToken;
 
 typedef struct pnNode {
@@ -30,10 +22,10 @@ typedef struct pnNode {
 	struct pnNode *right;
 } pnNode;
 
-extern int evalStr(char *str);
+extern long evalStr(char *str);
 extern pnNode* buildPNTree(pnToken *buffer);
-extern int evalPNTree(pnNode *tree);
+extern long evalPNTree(pnNode *tree);
 extern void printPNTree(pnNode *tree, char *prefix);
 extern _Bool spawnBracket(pnNode *node1, pnNode *node2);
 void printINFromPN(pnNode *tree, char buffer[STR_TO_IN_LEN]);
-extern void printResult(int result);
+extern void printResult(long result);
