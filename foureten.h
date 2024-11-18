@@ -6,7 +6,7 @@
 #include "sys/types.h"
 
 // Check out BISON and write small numerical expression parser
-typedef enum { OFF = 0, ON, EOF } par;
+typedef enum parity { OFF = 0, ON, END } par;
 typedef struct {
   par gamma;
   char operators[3];
@@ -14,8 +14,8 @@ typedef struct {
 } syntax;
 typedef struct {
   par gamma;
-  const char operators[3] = {'?','?','?'};
-  const float weights[3] = {.5f,.5f,.5f};
+  char operators[3];
+  float weights[3];
 } any_syntax;
 
 // TODO 1: work on calc.y to accept a array of chars and

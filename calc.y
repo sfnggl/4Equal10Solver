@@ -1,10 +1,7 @@
 /* Infix notation calculator. */
 
 %{
-  #include <math.h>
-  #include <stdio.h>
-  int yylex (void);
-  void yyerror (char const *);
+  #include "calc.h"
 %}
 
 /* Bison declarations. */
@@ -42,30 +39,45 @@ exp:
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-int yylex (void){
-  int c = getchar ();
+unsigned int idx = 0;
+char *msg;
+
+void yystrdup(const char * argv){
+  msg = strndup(argv, strlen(argv));
+}
+
+int yylex(){
+  char c = msg[idx];
   /* Skip white space. */
-  while (c == ' ' || c == '\t')
-    c = getchar ();
+  while (c == ' ' || c == '\t'){
+    idx++;
+    c = msg[idx];   
+  }
 
   /* Process numbers. */
-  if (c == '.' || isdigit (c)){
-      ungetc (c, stdin);
-      if (scanf ("%lf", &yylval) != 1)
-        abort ();
+  if (isdigit (msg[idx])){
+    if ((yylval = (double)atof(msg+idx)) == -1){
+      abort ();
       return NUM;
     }
+  }
+  
   /* Return end-of-input. */
-  else if (c == EOF)
+  else if (msg[idx] == EOF)
     return YYEOF;
   /* Return a single char. */
   else
-    return c;
+    return msg[idx];
+
+  idx++;
 }
 
-int main (void){
-  return yyparse ();
+double yycallparse(void){
+  yylex();
+  yyparse();
+  return yylval;
 }
 
 /* Called by yyparse on error. */
