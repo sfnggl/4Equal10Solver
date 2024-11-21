@@ -3,7 +3,7 @@
 CC=gcc
 BISON=bison
 CFLAGS=-Werror -I. -lm
-INCLUDE=foureten.h calc.tab.h
+INCLUDE=foureten.h calc.tab.h calc.h
 SRC=foureten.c calc.tab.c main.c
 OBJ=$(SRC:.c=.o)
 OUT=4e10
@@ -24,4 +24,5 @@ debug : $(OUT)
 clean:
 	rm -rfv $(OBJ) *.tab.*
 
+.NOTINTERMEDIATE: calc.tab.c
 .PHONY: clean
