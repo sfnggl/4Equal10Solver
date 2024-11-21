@@ -68,17 +68,6 @@ int generate_to_syntax(syntax* s, char* msg){
       return -1;
     }
   }
-  char buffer[]={' ','\0'};
-  for (size_t i = 0; i < strlen(msg); i++){
-    if (40 == msg[i] || 41 == msg[i]){
-      buffer[0] = msg[i];
-      s->weights[i] = 0.0f;
-      i++;
-    }
-    if (i >= strlen(msg)) break;
-    s->weights[i] = 1.0f;
-    s->operators[i] = *OPERATOR_FROM_STRING(buffer);
-  }
   return 0;
 }
 
@@ -87,6 +76,7 @@ void change_order(syntax* s){}
 void change_parity(syntax* s){}
 
 int concatenate(uint* argv, syntax* s, char* msg){
+  
   return 0;
 }
 

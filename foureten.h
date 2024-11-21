@@ -70,10 +70,8 @@ static Dictionary dictionary = {
   .tokens = tokens
 };
 
-// TODO 0: Implement syntax rule
-// and the expression generator
 // TODO 1: work on calc.y to accept a array of chars and
-// build a minimal API (WIP)
+// build a minimal API (WIP) - Implement a stack structure to mimic stdin functionality on the parser function
 // TODO 2: lookup MD4 and implement as a fast quick hash
 // to implement the search space
 // TODO 3: write agent with BSP (all costs are unitary, so
