@@ -2,9 +2,9 @@
 
 CC=gcc
 BISON=bison
-CFLAGS=-Wall -Werror -I.
+CFLAGS=-Werror -I. -lm
 INCLUDE=foureten.h calc.tab.h
-SRC=main.c calc.tab.c
+SRC=foureten.c calc.tab.c main.c
 OBJ=$(SRC:.c=.o)
 OUT=4e10
 
@@ -22,6 +22,6 @@ debug : $(OUT)
 	$(CC) $(CFLAGS) -o 4e10 $(OBJ)
 
 clean:
-	rm -rfv $(OBJ) $(OUT)
+	rm -rfv $(OBJ) *.tab.*
 
 .PHONY: clean
