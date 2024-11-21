@@ -1,7 +1,13 @@
 /* Infix notation calculator. */
 
 %{
-  #include "calc.h"
+  #include <math.h>
+  #include <stdio.h>
+
+  int yylex();
+  void yyerror(char const *);
+  void yystrdup(const char * argv);
+  double yycallparse(void);
 %}
 
 /* Bison declarations. */
@@ -57,11 +63,9 @@ int yylex(){
   }
 
   /* Process numbers. */
-  if (isdigit (msg[idx])){
-    if ((yylval = (double)atof(msg+idx)) == -1){
-      abort ();
-      return NUM;
-    }
+  if (isdigit(msg[idx])){
+    yylval = (double)atof(msg+idx);
+    return NUM;
   }
   
   /* Return end-of-input. */
